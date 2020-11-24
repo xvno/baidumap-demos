@@ -6,6 +6,16 @@
  */
 
 export default [
+  {
+    path: '/m',
+    name: 'baidumap.m',
+    component: () => import('@/views/Baidumap/M.vue'),
+
+    // If the user needs to be authenticated to view this page
+    meta: {
+      auth: true
+    }
+  },
   // Home
   {
     path: '/home',
@@ -14,8 +24,8 @@ export default [
 
     // If the user needs to be authenticated to view this page
     meta: {
-      auth: true,
-    },
+      auth: true
+    }
   },
 
   // Account
@@ -26,8 +36,8 @@ export default [
 
     // If the user needs to be authenticated to view this page.
     meta: {
-      auth: true,
-    },
+      auth: true
+    }
   },
 
   // Login
@@ -38,8 +48,8 @@ export default [
 
     // If the user needs to be a guest to view this page.
     meta: {
-      guest: true,
-    },
+      guest: true
+    }
   },
 
   // Register
@@ -50,17 +60,17 @@ export default [
 
     // If the user needs to be a guest to view this page.
     meta: {
-      guest: true,
-    },
+      guest: true
+    }
   },
 
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/home'
   },
 
   {
     path: '/*',
-    redirect: '/home',
-  },
+    redirect: '/home'
+  }
 ];

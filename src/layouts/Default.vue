@@ -41,6 +41,16 @@
               Account
             </a>
           </router-link>
+          <router-link
+            :to="{ name: 'baidumap.m' }"
+            active-class="active"
+            class="nav-item"
+            tag="li"
+          >
+            <a class="nav-link">
+              M
+            </a>
+          </router-link>
         </ul>
         <span class="navbar-text">
           <a
