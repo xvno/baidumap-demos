@@ -16,6 +16,7 @@ module.exports = {
     'no-use-before-define': [0],
     'vue/max-attributes-per-line': [0],
     'func-names': [0],
+    'no-param-reassign': [0],
     'operator-linebreak': [0]
   },
   parserOptions: {

@@ -15,29 +15,39 @@
 export default {
   name: 'M',
   data() {
-    return {};
+    return {
+      defaultFillColor: '#CD3333',
+      hoverFillColor: '#008CFF', // 'HSLA(240, 70%, 81%, 0.7)',
+      /**
+       * 消息窗
+       */
+      optsInfoWindow: {
+        width: 200, // 信息窗口宽度
+        height: 100, // 信息窗口高度
+        title: '面积', // 信息窗口标题
+        message: ''
+      }
+    };
   },
   created() {},
 
   async mounted() {
+    const z = this;
     await this.loadAllLibsSync();
 
-    // const poi = new BMap.Point(116.307852, 40.057031);
+    const poi = new BMap.Point(116.403765, 39.91485); // 宇宙中心
     const map = new BMap.Map('map');
-    window.bmap = map;
-    map.centerAndZoom(new BMap.Point(116.403765, 39.91485), 12); //  设置中心点坐标和地图级别
+    z.map = map;
+    map.centerAndZoom(poi, 12); //  设置中心点坐标和地图级别
     map.enableScrollWheelZoom(); //  启用鼠标滚动对地图放大缩小
 
-    // 鼠标绘制完成回调方法   获取各个点的经纬度
-    const overlays = [];
-    window.overlays = overlays;
     const styleOptions = {
       strokeColor: 'red', // 边线颜色。
-      fillColor: '#CD3333', // 填充颜色。当参数为空时，圆形将没有填充效果。
+      fillColor: z.defaultFillColor, // 填充颜色。当参数为空时，圆形将没有填充效果。
       strokeWeight: 2, // 边线的宽度，以像素为单位。
-      strokeOpacity: 0.8, // 边线透明度，取值范围0 - 1。
-      fillOpacity: 0.5, // 填充的透明度，取值范围0 - 1。
-      strokeStyle: 'solid', // 边线的样式，solid或dashed。
+      strokeOpacity: 0.8, // 边线透明度，取值范围 0 - 1。
+      fillOpacity: 0.5, // 填充的透明度，取值范围 0 - 1。
+      strokeStyle: 'solid' // 边线的样式，solid或dashed。
     };
 
     // 实例化鼠标绘制工具
@@ -48,50 +58,86 @@ export default {
       drawingToolOptions: {
         anchor: BMAP_ANCHOR_TOP_RIGHT, // 位置
         offset: new BMap.Size(5, 5), // 偏离值
-        // drawingModes: [BMAP_DRAWING_POLYGON],
+        drawingModes: [BMAP_DRAWING_POLYGON]
       },
-      polygonOptions: styleOptions, // 多边形的样式
-      circleOptions: styleOptions,
-      rectangleOptions: styleOptions,
-      polylineOptions: styleOptions,
+      polygonOptions: styleOptions // 多边形的样式
     });
 
-    // 添加鼠标绘制工具监听事件，用于获取绘制结果
-    drawingManager.addEventListener('overlaycomplete', overlayComplete);
+    // 绘制完成
     drawingManager.addEventListener('polygoncomplete', polygonComplete);
 
-    function overlayComplete(e) {
-      console.log('Overlay complete: ', e.overlays);
-      overlays.push(e.overlay);
-      window.eo = e.overlay;
-      e.overlay.enableEditing();
+    function polygonComplete(p) {
+      const path = p.getPath(); // Array<Point>
+      const area = BMapLib.GeoUtils.getPolygonArea(path);
+      console.log(`${area} 平方米`);
+      /**
+       * 开启对刚绘制的多边形的编辑
+       */
+      p.enableEditing();
+
+      /**
+       * 增加鼠标事件监听: over, out, click, rightclick
+       */
+      p.addEventListener('mouseover', mouseOverHandler);
+      p.addEventListener('mouseout', mouseOutHandler);
+      p.addEventListener(
+        'click',
+        showInfo.bind({
+          opt: z.optsInfoWindow,
+          map: z.map
+        })
+      );
+      p.addEventListener('lineupdate', lineupdateHandler);
+    }
+    function lineupdateHandler(e) {
+      const area = BMapLib.GeoUtils.getPolygonArea(e.target.getPath());
+      console.log('面积改变: ', area);
+    }
+    function mouseOverHandler(e) {
+      e.target.setFillColor(z.hoverFillColor);
     }
 
-    function polygonComplete(e) {
-      const path = e.overlay.getPath(); // Array<Point> 返回多边型的点数组
-      console.info('路径点的数量: ', path.length);
-      console.group('Area-----');
-      console.log(BMapLib.GeoUtils.getPolygonArea(path), ' 平方米');
-      console.groupEnd('-----Area');
-      e.overlay.enableEditing();
+    function mouseOutHandler(e) {
+      e.target.setFillColor(z.defaultFillColor);
     }
 
-    function clearAll() {
-      for (let i = 0; i < overlays.length; i++) {
-        map.removeOverlay(overlays[i]);
+    /**
+     * 绑定单击 polygon 的动作
+     */
+    function showInfo(e) {
+      // console.log('showInfo: e', e);
+      const area = BMapLib.GeoUtils.getPolygonArea(e.target.getPath());
+      // 注意此处的 this 指向, 是定义处 bind 的对象.
+      const iwin = new BMap.InfoWindow(`${area.toFixed(2)} 平方米`, this.opt);
+      this.map.openInfoWindow(iwin, e.point);
+    }
+
+    const menu = new BMap.ContextMenu();
+    const txtMenuItem = [
+      {
+        text: '删除',
+        callback(ee) {
+          if (ee.target && ee.target.Lb === 'overlay') {
+            ee.target.remove();
+          } else {
+            console.log('Invalid remove');
+          }
+        }
       }
-      overlays.length = 0;
+    ];
+    for (let i = 0; i < txtMenuItem.length; i++) {
+      menu.addItem(
+        new BMap.MenuItem(txtMenuItem[i].text, txtMenuItem[i].callback, 100)
+      );
     }
+    map.addContextMenu(menu);
   },
   methods: {
     async loadAllLibsSync() {
       const arr = [
-        'https://api.map.baidu.com/api?v=2.0&ak=t35wFVMYY4C4ZqCMh64qG4lpGkOgXbSy',
         'https://api.map.baidu.com/getscript?v=2.0&ak=t35wFVMYY4C4ZqCMh64qG4lpGkOgXbSy&services=&t=20200914160603',
-        'https://api.map.baidu.com/api?type=webgl&v=1.0&ak=t35wFVMYY4C4ZqCMh64qG4lpGkOgXbSy',
-        'https://api.map.baidu.com/getscript?type=webgl&v=1.0&ak=t35wFVMYY4C4ZqCMh64qG4lpGkOgXbSy&services=&t=20201104222554',
         'http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js',
-        'http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js',
+        'http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js'
       ];
       for (let i = 0; i < arr.length; i++) {
         console.log('url: ', arr[i]);
@@ -105,21 +151,21 @@ export default {
       document.head.appendChild(cssLink);
 
       function runItem(src) {
-        return new Promise((r, j) => {
+        return new Promise((s, j) => {
           const scripts = document.createElement('script');
           scripts.src = src;
           document.head.appendChild(scripts);
           scripts.onload = function (e) {
             console.log(e);
-            r();
+            s();
           };
           setTimeout(() => {
             j();
           }, 10000);
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -1,25 +1,15 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <router-link
-        :to="{ name: 'home.index' }"
-        class="navbar-brand"
-      >
+      <router-link :to="{ name: 'home.index' }" class="navbar-brand">
         Vue 2 Boilerplate
       </router-link>
 
-      <button
-        class="navbar-toggler"
-        type="button"
-        @click="toggleMenu"
-      >
+      <button class="navbar-toggler" type="button" @click="toggleMenu">
         <span class="navbar-toggler-icon" />
       </button>
 
-      <div
-        :class="{ show : menuCollapsed}"
-        class="collapse navbar-collapse"
-      >
+      <div :class="{ show: menuCollapsed }" class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
           <router-link
             :to="{ name: 'home.index' }"
@@ -27,9 +17,7 @@
             class="nav-item"
             tag="li"
           >
-            <a class="nav-link">
-              Home
-            </a>
+            <a class="nav-link"> Home </a>
           </router-link>
           <router-link
             :to="{ name: 'account.index' }"
@@ -37,9 +25,7 @@
             class="nav-item"
             tag="li"
           >
-            <a class="nav-link">
-              Account
-            </a>
+            <a class="nav-link"> Account </a>
           </router-link>
           <router-link
             :to="{ name: 'baidumap.m' }"
@@ -47,17 +33,20 @@
             class="nav-item"
             tag="li"
           >
-            <a class="nav-link">
-              M
-            </a>
+            <a class="nav-link"> Baidumap </a>
+          </router-link>
+
+          <router-link
+            :to="{ name: 'baidumap.iwin' }"
+            active-class="active"
+            class="nav-item"
+            tag="li"
+          >
+            <a class="nav-link"> InfoWindow </a>
           </router-link>
         </ul>
         <span class="navbar-text">
-          <a
-            class="btn btn-secondary"
-            href="#"
-            @click.prevent="logout"
-          >
+          <a class="btn btn-secondary" href="#" @click.prevent="logout">
             <i class="fa fa-sign-out" />
           </a>
         </span>

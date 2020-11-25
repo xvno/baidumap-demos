@@ -7,7 +7,17 @@
 
 export default [
   {
-    path: '/m',
+    path: '/iwin',
+    name: 'baidumap.iwin',
+    component: () => import('@/views/Baidumap/InfoWindow.vue'),
+
+    // If the user needs to be authenticated to view this page
+    meta: {
+      auth: true
+    }
+  },
+  {
+    path: '/map',
     name: 'baidumap.m',
     component: () => import('@/views/Baidumap/M.vue'),
 
