@@ -17,7 +17,8 @@ module.exports = {
     'vue/max-attributes-per-line': [0],
     'func-names': [0],
     'no-param-reassign': [0],
-    'operator-linebreak': [0]
+    'operator-linebreak': [0],
+    'max-len': [0]
   },
   parserOptions: {
     parser: 'babel-eslint'

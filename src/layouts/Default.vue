@@ -2,7 +2,7 @@
   <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <router-link :to="{ name: 'home.index' }" class="navbar-brand">
-        Vue 2 Boilerplate
+        Baidu map Demos
       </router-link>
 
       <button class="navbar-toggler" type="button" @click="toggleMenu">
