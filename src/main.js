@@ -16,6 +16,8 @@ import Vue from 'vue';
 
 import './plugins/vuex';
 import './plugins/axios';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import { i18n } from './plugins/vue-i18n';
 import { router } from './plugins/vue-router';
 import './plugins/vuex-router-sync';
@@ -54,6 +56,7 @@ import store from './store';
 Vue.config.productionTip = false;
 
 store.dispatch('auth/check');
+Vue.use(ElementUI);
 
 /* eslint-disable no-new */
 new Vue({
